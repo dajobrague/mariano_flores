@@ -1,8 +1,26 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
 :root {
+  /* Dental Brand Colors - Exact Green Theme */
+  --primary: #b7d778; /* Brand Green */
+  --primary-dark: #9bc95a; /* Darker Brand Green */
+  --secondary: #b7d778; /* Primary Brand Green */
+  --accent: #c5e089; /* Light Brand Green */
+  --success: #a5d058; /* Success Green */
+  --warning: #ff9800; /* Orange for attention */
+  
+  /* Neutral Colors */
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #1f2937;
+  --muted: #f5faf0; /* Light green tint */
+  --muted-foreground: #64748b;
+  --border: #e8f5e8; /* Light green border */
+  
+  /* Typography */
+  --text-primary: #2e7d32; /* Dark green for headings */
+  --text-secondary: #4a6741; /* Medium green */
+  --text-muted: #757575; /* Gray for muted text */
 }
 
 @theme inline {
@@ -22,5 +40,9 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+}
+
+* {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
 }

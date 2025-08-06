@@ -1,0 +1,258 @@
+{
+  "project": {
+    "name": "Mariano Flores Dentist Landing Page",
+    "type": "Multi-page Dental Website",
+    "pages": 4,
+    "target_audience": "American clients",
+    "language": "English",
+    "responsive": true
+  },
+  "design_system": {
+    "breakpoints": {
+      "mobile": "320px - 768px",
+      "tablet": "768px - 1024px", 
+      "desktop": "1024px+"
+    },
+    "grid": {
+      "columns": 12,
+      "container_max_width": "1200px",
+      "gutter": "24px"
+    },
+    "spacing": {
+      "xs": "8px",
+      "sm": "16px", 
+      "md": "24px",
+      "lg": "32px",
+      "xl": "48px",
+      "2xl": "64px",
+      "3xl": "96px"
+    }
+  },
+  "pages": [
+    {
+      "id": "homepage",
+      "name": "Home/Landing Page",
+      "source_image": "page-000.png",
+      "sections": [
+        {
+          "type": "header",
+          "components": ["logo", "navigation_menu", "contact_button"],
+          "layout": "horizontal_flex",
+          "sticky": true,
+          "background": "white",
+          "height": "80px"
+        },
+        {
+          "type": "hero_section", 
+          "components": ["main_headline", "subheadline", "cta_button", "hero_image"],
+          "layout": "split_layout",
+          "background": "gradient_or_image",
+          "height": "100vh"
+        },
+        {
+          "type": "services_overview",
+          "components": ["section_title", "service_cards", "view_all_link"],
+          "layout": "grid_3_columns",
+          "background": "light_background"
+        },
+        {
+          "type": "about_preview",
+          "components": ["doctor_image", "about_text", "credentials"],
+          "layout": "two_column",
+          "background": "white"
+        },
+        {
+          "type": "testimonials",
+          "components": ["testimonial_cards", "rating_display"],
+          "layout": "carousel_or_grid",
+          "background": "accent_background"
+        },
+        {
+          "type": "contact_cta",
+          "components": ["appointment_form", "contact_info", "map"],
+          "layout": "split_layout",
+          "background": "primary_color"
+        }
+      ]
+    },
+    {
+      "id": "services", 
+      "name": "Services Page",
+      "source_image": "page-001.png",
+      "sections": [
+        {
+          "type": "page_header",
+          "components": ["breadcrumb", "page_title", "page_description"],
+          "layout": "centered",
+          "background": "gradient"
+        },
+        {
+          "type": "services_grid",
+          "components": ["service_detail_cards"],
+          "layout": "grid_2_or_3_columns",
+          "background": "white"
+        },
+        {
+          "type": "technology_section",
+          "components": ["equipment_images", "technology_descriptions"],
+          "layout": "alternating_layout"
+        }
+      ]
+    },
+    {
+      "id": "about",
+      "name": "About/Doctor Page", 
+      "source_image": "page-002.png",
+      "sections": [
+        {
+          "type": "doctor_profile",
+          "components": ["large_doctor_image", "biography", "education", "experience"],
+          "layout": "hero_profile",
+          "background": "professional"
+        },
+        {
+          "type": "credentials",
+          "components": ["certifications", "awards", "memberships"],
+          "layout": "badge_grid",
+          "background": "light"
+        },
+        {
+          "type": "philosophy",
+          "components": ["mission_statement", "approach_description"],
+          "layout": "centered_text",
+          "background": "white"
+        }
+      ]
+    },
+    {
+      "id": "contact",
+      "name": "Contact/Appointment Page",
+      "source_image": "page-003.png", 
+      "sections": [
+        {
+          "type": "contact_hero",
+          "components": ["contact_headline", "office_image"],
+          "layout": "overlay_layout",
+          "background": "image_background"
+        },
+        {
+          "type": "appointment_booking",
+          "components": ["booking_form", "available_times", "confirmation"],
+          "layout": "form_centered",
+          "background": "white"
+        },
+        {
+          "type": "office_info",
+          "components": ["address", "phone", "email", "hours", "map_embed"],
+          "layout": "info_grid",
+          "background": "light"
+        }
+      ]
+    }
+  ],
+  "components": {
+    "navigation": {
+      "type": "horizontal_menu",
+      "items": ["Home", "Services", "About", "Contact"],
+      "mobile_behavior": "hamburger_menu",
+      "cta_button": "Book Appointment"
+    },
+    "buttons": {
+      "primary": {
+        "style": "solid",
+        "corners": "rounded",
+        "size": "medium",
+        "hover_effect": "scale_or_color_change"
+      },
+      "secondary": {
+        "style": "outline", 
+        "corners": "rounded",
+        "size": "medium"
+      }
+    },
+    "cards": {
+      "service_card": {
+        "components": ["icon", "title", "description", "link"],
+        "layout": "vertical",
+        "hover_effect": "elevation_shadow"
+      },
+      "testimonial_card": {
+        "components": ["quote", "author_name", "rating", "author_image"],
+        "layout": "vertical_centered"
+      }
+    },
+    "forms": {
+      "appointment_form": {
+        "fields": ["name", "email", "phone", "service", "preferred_date", "message"],
+        "validation": true,
+        "submit_button": "primary_button"
+      },
+      "contact_form": {
+        "fields": ["name", "email", "subject", "message"],
+        "validation": true
+      }
+    }
+  },
+  "visual_assets": {
+    "extracted_images": {
+      "page_000": {
+        "file": "page-000.png",
+        "dimensions": "2481x3509",
+        "description": "Homepage layout with hero section and main content areas"
+      },
+      "page_001": {
+        "file": "page-001.png", 
+        "dimensions": "2481x3509",
+        "description": "Services page layout with detailed service offerings"
+      },
+      "page_002": {
+        "file": "page-002.png",
+        "dimensions": "2481x3509", 
+        "description": "About/Doctor page with professional profile and credentials"
+      },
+      "page_003": {
+        "file": "page-003.png",
+        "dimensions": "2481x3509",
+        "description": "Contact/Appointment page with booking form and office information"
+      }
+    },
+    "asset_extraction_needed": [
+      "Logo and brand elements",
+      "Icons for services and features", 
+      "Doctor photos and professional images",
+      "Background images and textures",
+      "Certification badges and awards",
+      "Technology/equipment images"
+    ]
+  },
+  "mobile_design": {
+    "approach": "mobile_first",
+    "key_adaptations": [
+      "Stack horizontal layouts vertically",
+      "Collapse navigation to hamburger menu",
+      "Optimize form layouts for touch",
+      "Ensure readable font sizes (16px minimum)",
+      "Maintain visual hierarchy with proper spacing",
+      "Optimize images for mobile viewing"
+    ]
+  },
+  "technical_requirements": {
+    "framework": "Next.js 14+",
+    "styling": "Tailwind CSS",
+    "language": "TypeScript", 
+    "image_optimization": "Next.js Image component",
+    "responsive_images": "Multiple breakpoint sizes",
+    "performance": "Core Web Vitals optimization",
+    "accessibility": "WCAG 2.1 AA compliance"
+  },
+  "implementation_priority": [
+    "1. Set up Next.js project structure",
+    "2. Extract and optimize all visual assets",
+    "3. Build component library matching design",
+    "4. Implement homepage with exact layout",
+    "5. Create responsive mobile version", 
+    "6. Build remaining pages following pattern",
+    "7. Integrate forms and interactive elements",
+    "8. Performance optimization and testing"
+  ]
+}
