@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { FaMicroscope, FaHeart, FaUserMd, FaTrophy } from 'react-icons/fa'
 
 export default function HeroSectionMobile() {
   return (
@@ -54,27 +55,45 @@ export default function HeroSectionMobile() {
             </Link>
           </div>
 
-          {/* Features Icons Row - Simplificado para móvil */}
-          <div className="grid grid-cols-2 gap-4 px-4 mt-12">
-            <div className="flex flex-col items-center text-center p-4 bg-white/10 rounded-2xl backdrop-blur-sm">
-              <div className="mb-3 p-3 rounded-full bg-white/20">
-                <svg className="w-6 h-6" style={{color: '#2e7d32'}} fill="currentColor" viewBox="0 0 512 512">
-                  <path d="M160 320h12v16c0 8.84 7.16 16 16 16h40c8.84 0 16-7.16 16-16v-16h12c17.67 0 32-14.33 32-32V64c0-17.67-14.33-32-32-32V16c0-8.84-7.16-16-16-16h-64c-8.84 0-16 7.16-16 16v16c-17.67 0-32 14.33-32 32v224c0 17.67 14.33 32 32 32zm304 128h-1.29C493.24 413.99 512 369.2 512 320c0-105.88-86.12-192-192-192v64c70.58 0 128 57.42 128 128s-57.42 128-128 128H48c-26.51 0-48 21.49-48 48 0 8.84 7.16 16 16 16h480c8.84 0 16-7.16 16-16 0-26.51-21.49-48-48-48zm-360-32h208c4.42 0 8-3.58 8-8v-16c0-4.42-3.58-8-8-8H104c-4.42 0-8 3.58-8 8v16c0 4.42 3.58 8 8 8z"/>
-                </svg>
+          {/* Features Icons Row - 4 características como en desktop */}
+          <div className="grid grid-cols-2 gap-3 px-4 mt-12">
+            {/* Feature 1 */}
+            <div className="flex flex-col items-center text-center p-3 bg-white/10 rounded-2xl backdrop-blur-sm">
+              <div className="mb-2 p-2 rounded-full bg-white/20">
+                <FaMicroscope className="w-5 h-5" style={{color: '#2e7d32'}} />
               </div>
-              <h3 className="text-sm font-medium leading-tight text-white">
-                Atención de Calidad
+              <h3 className="text-xs font-medium leading-tight" style={{color: '#2e7d32'}}>
+                Atención de calidad basada en la experiencia y en el conocimiento.
               </h3>
             </div>
 
-            <div className="flex flex-col items-center text-center p-4 bg-white/10 rounded-2xl backdrop-blur-sm">
-              <div className="mb-3 p-3 rounded-full bg-white/20">
-                <svg className="w-6 h-6" style={{color: '#2e7d32'}} fill="currentColor" viewBox="0 0 512 512">
-                  <path d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/>
-                </svg>
+            {/* Feature 2 */}
+            <div className="flex flex-col items-center text-center p-3 bg-white/10 rounded-2xl backdrop-blur-sm">
+              <div className="mb-2 p-2 rounded-full bg-white/20">
+                <FaHeart className="w-5 h-5" style={{color: '#2e7d32'}} />
               </div>
-              <h3 className="text-sm font-medium leading-tight text-white">
-                Atención Ética
+              <h3 className="text-xs font-medium leading-tight" style={{color: '#2e7d32'}}>
+                Promovemos la salud dental de una manera ética.
+              </h3>
+            </div>
+
+            {/* Feature 3 */}
+            <div className="flex flex-col items-center text-center p-3 bg-white/10 rounded-2xl backdrop-blur-sm">
+              <div className="mb-2 p-2 rounded-full bg-white/20">
+                <FaUserMd className="w-5 h-5" style={{color: '#2e7d32'}} />
+              </div>
+              <h3 className="text-xs font-medium leading-tight" style={{color: '#2e7d32'}}>
+                Amor por nuestra profesión.
+              </h3>
+            </div>
+
+            {/* Feature 4 */}
+            <div className="flex flex-col items-center text-center p-3 bg-white/10 rounded-2xl backdrop-blur-sm">
+              <div className="mb-2 p-2 rounded-full bg-white/20">
+                <FaTrophy className="w-5 h-5" style={{color: '#2e7d32'}} />
+              </div>
+              <h3 className="text-xs font-medium leading-tight" style={{color: '#2e7d32'}}>
+                Experiencia en odontología desde hace 4 generaciones.
               </h3>
             </div>
           </div>
