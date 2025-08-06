@@ -69,11 +69,17 @@ export default function FooterMobile() {
             <Link href="/#staff" className="text-white hover:text-green-300 transition-colors text-center py-2 rounded-lg hover:bg-white/10">
               Personal
             </Link>
-            <Link href="/services" className="text-white hover:text-green-300 transition-colors text-center py-2 rounded-lg hover:bg-white/10">
+            <Link href="#services" className="text-white hover:text-green-300 transition-colors text-center py-2 rounded-lg hover:bg-white/10">
               Servicios
             </Link>
-            <Link href="/testimonials" className="text-white hover:text-green-300 transition-colors text-center py-2 rounded-lg hover:bg-white/10">
+            <Link href="#why-choose-us" className="text-white hover:text-green-300 transition-colors text-center py-2 rounded-lg hover:bg-white/10">
+              Por qué elegirnos
+            </Link>
+            <Link href="#testimonials" className="text-white hover:text-green-300 transition-colors text-center py-2 rounded-lg hover:bg-white/10">
               Testimonios
+            </Link>
+            <Link href="#appointment" className="text-white hover:text-green-300 transition-colors text-center py-2 rounded-lg hover:bg-white/10">
+              Agenda ahora
             </Link>
           </div>
         </div>

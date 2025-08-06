@@ -52,10 +52,13 @@ export default function HeaderMobile() {
         // Enlace dentro de la misma página
         const element = document.getElementById(targetId)
         if (element) {
-          element.scrollIntoView({ 
-            behavior: 'smooth',
-            block: 'start'
-          })
+          // Account for sticky header height
+        const headerHeight = 120 // Approximate mobile header height
+        const elementPosition = element.offsetTop - headerHeight
+        window.scrollTo({
+          top: elementPosition,
+          behavior: 'smooth'
+        })
           window.history.pushState(null, '', `#${targetId}`)
         }
       } else {
@@ -65,9 +68,12 @@ export default function HeaderMobile() {
         } else {
           const element = document.getElementById(targetId)
           if (element) {
-            element.scrollIntoView({ 
-              behavior: 'smooth',
-              block: 'start'
+            // Account for sticky header height
+            const headerHeight = 120 // Approximate mobile header height
+            const elementPosition = element.offsetTop - headerHeight
+            window.scrollTo({
+              top: elementPosition,
+              behavior: 'smooth'
             })
             window.history.pushState(null, '', `#${targetId}`)
           }
@@ -168,54 +174,42 @@ export default function HeaderMobile() {
             </Link>
             
             <Link
-              href="/why-choose-us"
+              href="#why-choose-us"
               className={`block py-3 px-4 rounded-lg font-medium transition-all duration-300 text-sm ${
                 isLinkActive('why-choose-us') 
                   ? 'text-green-600 bg-green-50 border-l-4 border-green-600' 
                   : 'text-gray-700 hover:text-green-600 hover:bg-gray-50'
               }`}
               onClick={(e) => {
-                handleSmoothScroll(e, '/why-choose-us')
+                handleSmoothScroll(e, '#why-choose-us')
               }}
             >
               Por qué Elegirnos
             </Link>
             
             <Link
-              href="/why-choose-us#history"
-              className={`block py-3 px-4 rounded-lg font-medium transition-all duration-300 text-sm ${
-                isLinkActive('history') 
-                  ? 'text-green-600 bg-green-50 border-l-4 border-green-600' 
-                  : 'text-gray-700 hover:text-green-600 hover:bg-gray-50'
-              }`}
-              onClick={(e) => handleSmoothScroll(e, '/why-choose-us#history')}
-            >
-              Nuestra Historia
-            </Link>
-            
-            <Link
-              href="/services"
+              href="#services"
               className={`block py-3 px-4 rounded-lg font-medium transition-all duration-300 text-sm ${
                 isLinkActive('services') 
                   ? 'text-green-600 bg-green-50 border-l-4 border-green-600' 
                   : 'text-gray-700 hover:text-green-600 hover:bg-gray-50'
               }`}
               onClick={(e) => {
-                handleSmoothScroll(e, '/services')
+                handleSmoothScroll(e, '#services')
               }}
             >
               Servicios
             </Link>
             
             <Link
-              href="/testimonials"
+              href="#testimonials"
               className={`block py-3 px-4 rounded-lg font-medium transition-all duration-300 text-sm ${
                 isLinkActive('testimonials') 
                   ? 'text-green-600 bg-green-50 border-l-4 border-green-600' 
                   : 'text-gray-700 hover:text-green-600 hover:bg-gray-50'
               }`}
               onClick={(e) => {
-                handleSmoothScroll(e, '/testimonials')
+                handleSmoothScroll(e, '#testimonials')
               }}
             >
               Testimonios

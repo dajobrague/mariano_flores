@@ -60,10 +60,13 @@ export default function Header() {
           // Si estamos en home, hacer scroll suave
           const element = document.getElementById(targetId)
           if (element) {
-            element.scrollIntoView({ 
-              behavior: 'smooth',
-              block: 'start'
-            })
+                    // Account for sticky header height
+        const headerHeight = 140 // Approximate header height
+        const elementPosition = element.offsetTop - headerHeight
+        window.scrollTo({
+          top: elementPosition,
+          behavior: 'smooth'
+        })
             window.history.pushState(null, '', `#${targetId}`)
           }
         } else {
@@ -82,7 +85,7 @@ export default function Header() {
     return activeSection === section
   }
   return (
-    <header className="bg-white">
+    <header className="bg-white sticky top-0 z-50 shadow-md">
       {/* Top Level - Logo, Horarios, Teléfono, Ubicación */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -171,13 +174,13 @@ export default function Header() {
                 }`}></span>
               </Link>
               <Link 
-                href="/why-choose-us" 
+                href="#why-choose-us" 
                 className={`font-medium transition-all duration-300 text-sm relative group ${
                   isActive('why-choose-us') 
                     ? 'text-green-600' 
                     : 'text-gray-700 hover:text-green-600'
                 }`}
-                onClick={(e) => handleSmoothScroll(e, '/why-choose-us')}
+                onClick={(e) => handleSmoothScroll(e, '#why-choose-us')}
               >
                 Porqué Elegirnos
                 <span className={`absolute -bottom-2 left-0 w-full h-0.5 bg-green-600 transition-all duration-300 ${
@@ -185,43 +188,43 @@ export default function Header() {
                 }`}></span>
               </Link>
               <Link 
-                href="/why-choose-us#history" 
-                className={`font-medium transition-all duration-300 text-sm relative group ${
-                  isActive('history') 
-                    ? 'text-green-600' 
-                    : 'text-gray-700 hover:text-green-600'
-                }`}
-                onClick={(e) => handleSmoothScroll(e, '/why-choose-us#history')}
-              >
-                Nuestra Historia
-                <span className={`absolute -bottom-2 left-0 w-full h-0.5 bg-green-600 transition-all duration-300 ${
-                  isActive('history') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
-                }`}></span>
-              </Link>
-              <Link 
-                href="/services" 
+                href="#services" 
                 className={`font-medium transition-all duration-300 text-sm relative group ${
                   isActive('services') 
                     ? 'text-green-600' 
                     : 'text-gray-700 hover:text-green-600'
                 }`}
-                onClick={(e) => handleSmoothScroll(e, '/services')}
+                onClick={(e) => handleSmoothScroll(e, '#services')}
               >
                 Servicios
                 <span className={`absolute -bottom-2 left-0 w-full h-0.5 bg-green-600 transition-all duration-300 ${
-                  isActive('services') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                  isActive('history') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
                 }`}></span>
               </Link>
               <Link 
-                href="/testimonials" 
+                href="#testimonials" 
                 className={`font-medium transition-all duration-300 text-sm relative group ${
                   isActive('testimonials') 
                     ? 'text-green-600' 
                     : 'text-gray-700 hover:text-green-600'
                 }`}
-                onClick={(e) => handleSmoothScroll(e, '/testimonials')}
+                onClick={(e) => handleSmoothScroll(e, '#testimonials')}
               >
                 Testimonios
+                <span className={`absolute -bottom-2 left-0 w-full h-0.5 bg-green-600 transition-all duration-300 ${
+                  isActive('services') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                }`}></span>
+              </Link>
+              <Link 
+                href="#appointment" 
+                className={`font-medium transition-all duration-300 text-sm relative group ${
+                  isActive('appointment') 
+                    ? 'text-green-600' 
+                    : 'text-gray-700 hover:text-green-600'
+                }`}
+                onClick={(e) => handleSmoothScroll(e, '#appointment')}
+              >
+                Contacto
                 <span className={`absolute -bottom-2 left-0 w-full h-0.5 bg-green-600 transition-all duration-300 ${
                   isActive('testimonials') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
                 }`}></span>

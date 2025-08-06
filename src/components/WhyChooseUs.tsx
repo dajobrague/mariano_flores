@@ -4,7 +4,7 @@ export default function WhyChooseUs() {
   return (
     <>
       {/* Benefits Section */}
-      <section className="py-20 bg-white">
+      <section id="why-choose-us" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Images Side */}

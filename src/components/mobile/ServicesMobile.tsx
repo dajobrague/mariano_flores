@@ -59,7 +59,7 @@ export default function ServicesMobile() {
   ]
 
   return (
-    <section className="py-12 bg-white">
+    <section id="services" className="py-12 bg-white">
       <div className="px-4 sm:px-6">
         {/* Header */}
         <div className="text-center mb-12">

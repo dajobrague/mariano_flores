@@ -14,7 +14,6 @@ import HeaderMobile from '@/components/mobile/HeaderMobile'
 import HeroSectionMobile from '@/components/mobile/HeroSectionMobile'
 import MedicalStaffMobile from '@/components/mobile/MedicalStaffMobile'
 import AppointmentBookingMobile from '@/components/mobile/AppointmentBookingMobile'
-import ServicesMobile from '@/components/mobile/ServicesMobile'
 import FooterMobile from '@/components/mobile/FooterMobile'
 
 interface ResponsiveWrapperProps {

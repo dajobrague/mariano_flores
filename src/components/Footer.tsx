@@ -58,11 +58,17 @@ export default function Footer() {
               <Link href="/#staff" className="text-white hover:text-gray-300 transition-colors text-sm">
                 Personal
               </Link>
-              <Link href="/services" className="text-white hover:text-gray-300 transition-colors text-sm">
+              <Link href="#services" className="text-white hover:text-gray-300 transition-colors text-sm">
                 Servicios
               </Link>
-              <Link href="/testimonials" className="text-white hover:text-gray-300 transition-colors text-sm">
+              <Link href="#why-choose-us" className="text-white hover:text-gray-300 transition-colors text-sm">
+                Por qué elegirnos
+              </Link>
+              <Link href="#testimonials" className="text-white hover:text-gray-300 transition-colors text-sm">
                 Testimonios
+              </Link>
+              <Link href="#appointment" className="text-white hover:text-gray-300 transition-colors text-sm">
+                Agenda ahora
               </Link>
             </div>
 

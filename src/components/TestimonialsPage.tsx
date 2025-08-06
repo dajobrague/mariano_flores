@@ -35,7 +35,7 @@ export default function TestimonialsPage() {
   return (
     <>
       {/* Main Testimonials Section */}
-      <section className="py-20 bg-white">
+      <section id="testimonials" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h1 className="text-4xl lg:text-5xl font-bold mb-6" style={{color: '#b7d778'}}>
@@ -83,7 +83,17 @@ export default function TestimonialsPage() {
             <div className="mt-4 md:mt-0">
               <button 
                 className="bg-white text-gray-900 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
-                onClick={() => window.location.href = '/#contact'}
+                onClick={() => {
+                  const appointmentSection = document.getElementById('appointment');
+                  if (appointmentSection) {
+                    const headerHeight = 140; // Account for sticky header
+                    const elementPosition = appointmentSection.offsetTop - headerHeight;
+                    window.scrollTo({
+                      top: elementPosition,
+                      behavior: 'smooth'
+                    });
+                  }
+                }}
               >
                 Agenda ahora
               </button>
