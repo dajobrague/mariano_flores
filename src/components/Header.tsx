@@ -1,6 +1,86 @@
+'use client'
+
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 export default function Header() {
+  const pathname = usePathname()
+  const [activeSection, setActiveSection] = useState('')
+
+  // Detectar la sección activa basada en la URL y scroll
+  useEffect(() => {
+    const detectActiveSection = () => {
+      const hash = window.location.hash
+      
+      if (pathname === '/') {
+        if (hash === '#staff') {
+          setActiveSection('staff')
+        } else if (hash === '#appointment') {
+          setActiveSection('appointment')
+        } else {
+          setActiveSection('home')
+        }
+      } else if (pathname === '/why-choose-us') {
+        if (hash === '#history') {
+          setActiveSection('history')
+        } else {
+          setActiveSection('why-choose-us')
+        }
+      } else if (pathname === '/services') {
+        setActiveSection('services')
+      } else if (pathname === '/testimonials') {
+        setActiveSection('testimonials')
+      } else {
+        setActiveSection('')
+      }
+    }
+
+    detectActiveSection()
+    
+    // Escuchar cambios en la URL
+    window.addEventListener('hashchange', detectActiveSection)
+    window.addEventListener('popstate', detectActiveSection)
+    
+    return () => {
+      window.removeEventListener('hashchange', detectActiveSection)
+      window.removeEventListener('popstate', detectActiveSection)
+    }
+  }, [pathname])
+
+  // Función para manejar clics con scroll suave
+  const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href.startsWith('#') || href.includes('#')) {
+      e.preventDefault()
+      const targetId = href.split('#')[1]
+      
+      if (href.startsWith('#')) {
+        // Enlace dentro de la misma página
+        if (pathname === '/') {
+          // Si estamos en home, hacer scroll suave
+          const element = document.getElementById(targetId)
+          if (element) {
+            element.scrollIntoView({ 
+              behavior: 'smooth',
+              block: 'start'
+            })
+            window.history.pushState(null, '', `#${targetId}`)
+          }
+        } else {
+          // Si estamos en otra página, navegar a home con el hash
+          window.location.href = `/${href}`
+        }
+      } else {
+        // Enlace a otra página con hash
+        window.location.href = href
+      }
+    }
+  }
+
+  // Función para determinar si un enlace está activo
+  const isActive = (section: string) => {
+    return activeSection === section
+  }
   return (
     <header className="bg-white">
       {/* Top Level - Logo, Horarios, Teléfono, Ubicación */}
@@ -62,23 +142,89 @@ export default function Header() {
           <div className="flex justify-between items-center py-4">
             {/* Navegación Principal */}
             <nav className="flex items-center space-x-8">
-              <Link href="/" className="text-gray-700 hover:text-green-600 font-medium transition-colors text-sm">
+              <Link 
+                href="/" 
+                className={`font-medium transition-all duration-300 text-sm relative group ${
+                  isActive('home') 
+                    ? 'text-green-600' 
+                    : 'text-gray-700 hover:text-green-600'
+                }`}
+                onClick={(e) => handleSmoothScroll(e, '/')}
+              >
                 Inicio
+                <span className={`absolute -bottom-2 left-0 w-full h-0.5 bg-green-600 transition-all duration-300 ${
+                  isActive('home') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                }`}></span>
               </Link>
-              <Link href="/staff" className="text-gray-700 hover:text-green-600 font-medium transition-colors text-sm">
+              <Link 
+                href="/#staff" 
+                className={`font-medium transition-all duration-300 text-sm relative group ${
+                  isActive('staff') 
+                    ? 'text-green-600' 
+                    : 'text-gray-700 hover:text-green-600'
+                }`}
+                onClick={(e) => handleSmoothScroll(e, '#staff')}
+              >
                 Staff
+                <span className={`absolute -bottom-2 left-0 w-full h-0.5 bg-green-600 transition-all duration-300 ${
+                  isActive('staff') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                }`}></span>
               </Link>
-              <Link href="/why-choose-us" className="text-gray-700 hover:text-green-600 font-medium transition-colors text-sm">
+              <Link 
+                href="/why-choose-us" 
+                className={`font-medium transition-all duration-300 text-sm relative group ${
+                  isActive('why-choose-us') 
+                    ? 'text-green-600' 
+                    : 'text-gray-700 hover:text-green-600'
+                }`}
+                onClick={(e) => handleSmoothScroll(e, '/why-choose-us')}
+              >
                 Porqué Elegirnos
+                <span className={`absolute -bottom-2 left-0 w-full h-0.5 bg-green-600 transition-all duration-300 ${
+                  isActive('why-choose-us') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                }`}></span>
               </Link>
-              <Link href="/our-story" className="text-gray-700 hover:text-green-600 font-medium transition-colors text-sm">
+              <Link 
+                href="/why-choose-us#history" 
+                className={`font-medium transition-all duration-300 text-sm relative group ${
+                  isActive('history') 
+                    ? 'text-green-600' 
+                    : 'text-gray-700 hover:text-green-600'
+                }`}
+                onClick={(e) => handleSmoothScroll(e, '/why-choose-us#history')}
+              >
                 Nuestra Historia
+                <span className={`absolute -bottom-2 left-0 w-full h-0.5 bg-green-600 transition-all duration-300 ${
+                  isActive('history') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                }`}></span>
               </Link>
-              <Link href="/services" className="text-gray-700 hover:text-green-600 font-medium transition-colors text-sm">
+              <Link 
+                href="/services" 
+                className={`font-medium transition-all duration-300 text-sm relative group ${
+                  isActive('services') 
+                    ? 'text-green-600' 
+                    : 'text-gray-700 hover:text-green-600'
+                }`}
+                onClick={(e) => handleSmoothScroll(e, '/services')}
+              >
                 Servicios
+                <span className={`absolute -bottom-2 left-0 w-full h-0.5 bg-green-600 transition-all duration-300 ${
+                  isActive('services') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                }`}></span>
               </Link>
-              <Link href="/testimonials" className="text-gray-700 hover:text-green-600 font-medium transition-colors text-sm">
+              <Link 
+                href="/testimonials" 
+                className={`font-medium transition-all duration-300 text-sm relative group ${
+                  isActive('testimonials') 
+                    ? 'text-green-600' 
+                    : 'text-gray-700 hover:text-green-600'
+                }`}
+                onClick={(e) => handleSmoothScroll(e, '/testimonials')}
+              >
                 Testimonios
+                <span className={`absolute -bottom-2 left-0 w-full h-0.5 bg-green-600 transition-all duration-300 ${
+                  isActive('testimonials') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                }`}></span>
               </Link>
             </nav>
 
@@ -114,8 +260,9 @@ export default function Header() {
               {/* CTA Button */}
               <Link
                 href="#appointment"
-                className="text-white px-6 py-2 rounded-full font-semibold transition-colors shadow-lg hover:opacity-90 text-sm"
+                className="text-white px-6 py-2 rounded-full font-semibold transition-all duration-300 shadow-lg hover:opacity-90 hover:scale-105 text-sm"
                 style={{backgroundColor: '#b7d778'}}
+                onClick={(e) => handleSmoothScroll(e, '#appointment')}
               >
                 Agenda una cita
               </Link>

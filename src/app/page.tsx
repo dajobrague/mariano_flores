@@ -1,19 +1,11 @@
-import Header from '@/components/Header'
-import HeroSection from '@/components/HeroSection'
-import MedicalStaff from '@/components/MedicalStaff'
-import AppointmentBooking from '@/components/AppointmentBooking'
-import Footer from '@/components/Footer'
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white">
-      <Header />
-      <main>
-        <HeroSection />
-        <MedicalStaff />
-        <AppointmentBooking />
-      </main>
-      <Footer />
-    </div>
+    <ResponsiveWrapper 
+      showHero={true} 
+      showStaff={true} 
+      showAppointment={true}
+    />
   );
 }

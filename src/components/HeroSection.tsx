@@ -16,9 +16,23 @@ export default function HeroSection() {
           <div className="text-left relative flex flex-col justify-start h-full min-h-[400px] pt-16">
             {/* Decorative dots pattern */}
             <div className="absolute -top-8 -left-8 grid grid-cols-8 gap-2 opacity-30">
-              {Array.from({ length: 64 }).map((_, i) => (
-                <div key={i} className="w-1 h-1 bg-white rounded-full"></div>
-              ))}
+              {/* Fixed dots to avoid hydration mismatch */}
+              <div className="w-1 h-1 bg-white rounded-full"></div>
+              <div className="w-1 h-1 bg-white rounded-full"></div>
+              <div className="w-1 h-1 bg-white rounded-full"></div>
+              <div className="w-1 h-1 bg-white rounded-full"></div>
+              <div className="w-1 h-1 bg-white rounded-full"></div>
+              <div className="w-1 h-1 bg-white rounded-full"></div>
+              <div className="w-1 h-1 bg-white rounded-full"></div>
+              <div className="w-1 h-1 bg-white rounded-full"></div>
+              <div className="w-1 h-1 bg-white rounded-full"></div>
+              <div className="w-1 h-1 bg-white rounded-full"></div>
+              <div className="w-1 h-1 bg-white rounded-full"></div>
+              <div className="w-1 h-1 bg-white rounded-full"></div>
+              <div className="w-1 h-1 bg-white rounded-full"></div>
+              <div className="w-1 h-1 bg-white rounded-full"></div>
+              <div className="w-1 h-1 bg-white rounded-full"></div>
+              <div className="w-1 h-1 bg-white rounded-full"></div>
             </div>
 
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-8" style={{color: '#2e7d32'}}>

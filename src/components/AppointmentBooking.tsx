@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export default function AppointmentBooking() {
   const [formData, setFormData] = useState({
@@ -12,8 +12,12 @@ export default function AppointmentBooking() {
     time: ''
   })
 
-  // Get today's date in YYYY-MM-DD format for min attribute
-  const today = new Date().toISOString().split('T')[0]
+  // Get today's date in YYYY-MM-DD format for min attribute - only on client
+  const [today, setToday] = useState('')
+  
+  useEffect(() => {
+    setToday(new Date().toISOString().split('T')[0])
+  }, [])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -117,7 +121,7 @@ export default function AppointmentBooking() {
                     type="date"
                     id="date"
                     name="date"
-                    min={today}
+                    {...(today && { min: today })}
                     defaultValue=""
                     onChange={handleChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
