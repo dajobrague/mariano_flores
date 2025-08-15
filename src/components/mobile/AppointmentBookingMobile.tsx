@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { createAppointment, AppointmentData, getDentistasDisponibles, DentistaData } from '../../services/airtable'
 
 export default function AppointmentBookingMobile() {
   const [formData, setFormData] = useState({
@@ -12,11 +13,34 @@ export default function AppointmentBookingMobile() {
     time: ''
   })
 
+  const [dentistas, setDentistas] = useState<DentistaData[]>([])
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitMessage, setSubmitMessage] = useState('')
+
   // Get today's date in YYYY-MM-DD format for min attribute - only on client
   const [today, setToday] = useState('')
   
   useEffect(() => {
     setToday(new Date().toISOString().split('T')[0])
+    
+    // Cargar dentistas disponibles
+    const fetchDentistas = async () => {
+      try {
+        const dentistasData = await getDentistasDisponibles()
+        setDentistas(dentistasData)
+      } catch (error) {
+        console.error('Error al cargar dentistas:', error)
+        // Usar datos de fallback si falla
+        setDentistas([
+          { id: 'rec1', nombre: 'Dr. Shereen Awuapara Flores' },
+          { id: 'rec2', nombre: 'Dr. Esther Flores Mubarak' },
+          { id: 'rec3', nombre: 'Dr. Nadia Awuapara Flores' },
+          { id: 'rec4', nombre: 'Dr. Ariana Benavides' }
+        ])
+      }
+    }
+    
+    fetchDentistas()
   }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -27,11 +51,56 @@ export default function AppointmentBookingMobile() {
     }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('Formulario enviado:', formData)
-    // Aquí iría la lógica de envío del formulario
-    alert('¡Gracias! Tu cita ha sido programada. Te contactaremos pronto.')
+    
+    if (isSubmitting) return
+
+    setIsSubmitting(true)
+    setSubmitMessage('')
+
+    try {
+      // Validar que todos los campos requeridos estén llenos
+      if (!formData.fullName || !formData.cellphone || !formData.serviceType || !formData.date || !formData.time || !formData.dentist) {
+        setSubmitMessage('Por favor, completa todos los campos requeridos.')
+        setIsSubmitting(false)
+        return
+      }
+
+      // Mapear los datos del formulario al formato de Airtable
+      const appointmentData: AppointmentData = {
+        'Nombre Completo': formData.fullName,
+        'Teléfono': formData.cellphone,
+        'Tipo de Servicio': formData.serviceType,
+        'Fecha': formData.date,
+        'Hora': formData.time,
+        'Dentista': [formData.dentist] // Array con el record ID del dentista
+      }
+
+      console.log('Datos del formulario antes del envío (móvil):', formData)
+      console.log('Datos formateados para Airtable (móvil):', appointmentData)
+
+      const result = await createAppointment(appointmentData)
+      console.log('Cita creada exitosamente (móvil):', result)
+      
+      setSubmitMessage('¡Gracias por agendar tu cita! Te contactaremos pronto para confirmar.')
+      
+      // Limpiar el formulario
+      setFormData({
+        fullName: '',
+        cellphone: '',
+        dentist: '',
+        serviceType: '',
+        date: '',
+        time: ''
+      })
+      
+    } catch (error) {
+      console.error('Error al agendar la cita (móvil):', error)
+      setSubmitMessage('Hubo un error al agendar tu cita. Por favor, inténtalo de nuevo.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -51,7 +120,8 @@ export default function AppointmentBookingMobile() {
 
         {/* Formulario */}
         <div className="bg-white rounded-2xl shadow-2xl p-6 sm:p-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="flex flex-col min-h-[500px]">
+            <div className="space-y-6 flex-1">
             {/* Nombre Completo */}
             <div>
               <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
@@ -100,10 +170,12 @@ export default function AppointmentBookingMobile() {
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900"
               >
                 <option value="">Selecciona un dentista</option>
-                <option value="dr-shereen">Dra. Shereen Awuapara Flores</option>
-                <option value="dr-esther">Dra. Esther Flores Mubarak</option>
-                <option value="dr-nadia">Dra. Nadia Awuapara Flores</option>
-                <option value="dr-ariana">Dra. Ariana Benavides</option>
+                {dentistas.map((dentista) => (
+                  <option key={dentista.id} value={dentista.id}>
+                    {dentista.nombre}
+                    {dentista.especialidad && ` - ${dentista.especialidad}`}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -175,20 +247,34 @@ export default function AppointmentBookingMobile() {
                 </select>
               </div>
             </div>
+            </div>
 
-            {/* Botón de Envío */}
-            <button
-              type="submit"
-              className="w-full text-white font-semibold py-4 px-6 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:opacity-90 active:scale-95"
-              style={{backgroundColor: '#b7d778'}}
-            >
-              <div className="flex items-center justify-center space-x-2">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <span>Agendar Cita</span>
+            {/* Espacio fijo para mensaje y botón */}
+            <div className="mt-6 space-y-4">
+              {/* Contenedor de altura fija para el mensaje */}
+              <div className="min-h-[60px] flex items-center">
+                {submitMessage && (
+                  <div className={`w-full p-4 rounded-lg ${submitMessage.includes('error') || submitMessage.includes('Hubo un error') ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+                    {submitMessage}
+                  </div>
+                )}
               </div>
-            </button>
+
+              {/* Botón siempre en la misma posición */}
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full text-white font-semibold py-4 px-6 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:opacity-90 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{backgroundColor: '#b7d778'}}
+              >
+                <div className="flex items-center justify-center space-x-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span>{isSubmitting ? 'Agendando...' : 'Agendar Cita'}</span>
+                </div>
+              </button>
+            </div>
           </form>
 
           {/* Información adicional */}

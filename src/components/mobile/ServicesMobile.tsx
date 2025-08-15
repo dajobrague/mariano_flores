@@ -1,62 +1,96 @@
 'use client'
 
+import { useState, useEffect, useCallback } from 'react'
+import { getServicesByCategory, ServiceCategory, ServiceData } from '../../services/airtable'
+
 export default function ServicesMobile() {
-  const services = [
+  const [serviceCategories, setServiceCategories] = useState<ServiceCategory[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  // Datos de fallback en caso de error con Airtable
+  const getFallbackServices = useCallback((): ServiceCategory[] => [
     {
-      title: "Rehabilitación Oral",
-      description: "Restauración de la función y estética de la boca mediante la colocación de dientes dañados o perdidos.",
-      images: [
-        { placeholder: "📋", text: "Evaluación inicial" },
-        { placeholder: "👨‍⚕️", text: "Procedimiento" },
-        { placeholder: "🦷", text: "Resultado" }
+      categoria: "Rehabilitación Oral",
+      servicios: [
+        { categoria: "Rehabilitación Oral", servicio: "Evaluación inicial", orden: 1 },
+        { categoria: "Rehabilitación Oral", servicio: "Procedimiento", orden: 2 },
+        { categoria: "Rehabilitación Oral", servicio: "Resultado", orden: 3 }
       ]
     },
     {
-      title: "Implantes",
-      description: "Solución para reemplazar dientes perdidos, constituyendo un tornillo de titanio que se inserta en el hueso maxilar o mandibular.",
-      images: [
-        { placeholder: "🔬", text: "Análisis" },
-        { placeholder: "💻", text: "Planificación" },
-        { placeholder: "👨‍⚕️", text: "Cirugía" }
+      categoria: "Implantes",
+      servicios: [
+        { categoria: "Implantes", servicio: "Análisis", orden: 1 },
+        { categoria: "Implantes", servicio: "Planificación", orden: 2 },
+        { categoria: "Implantes", servicio: "Cirugía", orden: 3 }
       ]
     },
     {
-      title: "Periodoncia",
-      description: "Diagnóstico, prevención y tratamiento de las enfermedades de las encías y las estructuras de soporte de los dientes.",
-      images: [
-        { placeholder: "📋", text: "Evaluación" },
-        { placeholder: "👨‍⚕️", text: "Tratamiento" },
-        { placeholder: "🦷", text: "Limpieza" }
-      ]
-    },
-    {
-      title: "Endodoncia",
-      description: "Procedimiento dental que consiste en la eliminación de la pulpa dental cuando está dañada o infectada.",
-      images: [
-        { placeholder: "🔬", text: "Diagnóstico" },
-        { placeholder: "💻", text: "Radiografías" },
-        { placeholder: "👨‍⚕️", text: "Procedimiento" }
-      ]
-    },
-    {
-      title: "Ortodoncia",
-      description: "Diagnóstico, prevención y tratamiento de problemas relacionados con la posición de los dientes y los maxilares.",
-      images: [
-        { placeholder: "📋", text: "Evaluación" },
-        { placeholder: "👨‍⚕️", text: "Colocación" },
-        { placeholder: "🦷", text: "Seguimiento" }
-      ]
-    },
-    {
-      title: "Odontopediatría",
-      description: "Diagnóstico, prevención y tratamiento de problemas relacionados con la posición de los dientes y los maxilares.",
-      images: [
-        { placeholder: "🔬", text: "Evaluación infantil" },
-        { placeholder: "💻", text: "Diagnóstico" },
-        { placeholder: "👨‍⚕️", text: "Tratamiento" }
+      categoria: "Periodoncia",
+      servicios: [
+        { categoria: "Periodoncia", servicio: "Evaluación", orden: 1 },
+        { categoria: "Periodoncia", servicio: "Tratamiento", orden: 2 },
+        { categoria: "Periodoncia", servicio: "Limpieza", orden: 3 }
       ]
     }
-  ]
+  ], [])
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        setLoading(true)
+        const categories = await getServicesByCategory()
+        setServiceCategories(categories)
+        setError(null)
+      } catch (err) {
+        console.error('Error al cargar servicios:', err)
+        setError('Error al cargar servicios desde Airtable')
+        // Usar datos de fallback
+        setServiceCategories(getFallbackServices())
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchServices()
+  }, [getFallbackServices])
+
+  // Función para obtener la URL de la imagen o placeholder
+  const getImageUrl = (serviceData: ServiceData): string => {
+    if (serviceData.imagen && serviceData.imagen.length > 0) {
+      return serviceData.imagen[0].url
+    }
+    return '' // Retorna vacío para usar placeholder
+  }
+
+  // Función para renderizar servicios en mobile
+  const renderServiceImages = (servicios: ServiceData[]) => {
+    const servicesToShow = servicios.slice(0, 3) // Mostrar máximo 3 en mobile
+    
+    return (
+      <div className="grid grid-cols-3 gap-3">
+        {servicesToShow.map((servicio, index) => (
+          <div key={servicio.id || index} className="text-center">
+            <div className="aspect-square bg-gray-100 rounded-xl overflow-hidden flex items-center justify-center mb-2">
+              {getImageUrl(servicio) ? (
+                <img 
+                  src={getImageUrl(servicio)} 
+                  alt={servicio.servicio}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="text-center text-gray-500">
+                  <div className="text-2xl">🦷</div>
+                </div>
+              )}
+            </div>
+            <p className="text-xs leading-tight text-gray-600 font-medium">{servicio.servicio}</p>
+          </div>
+        ))}
+      </div>
+    )
+  }
 
   return (
     <section id="services" className="py-12 bg-white">
@@ -69,43 +103,49 @@ export default function ServicesMobile() {
           </h1>
         </div>
 
+        {/* Loading State */}
+        {loading && (
+          <div className="text-center py-16">
+            <div className="text-gray-500">Cargando servicios...</div>
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <div className="text-center py-8">
+            <div className="text-red-500 mb-2 text-sm">{error}</div>
+            <div className="text-gray-500 text-xs">Mostrando servicios predeterminados</div>
+          </div>
+        )}
+
         {/* Services Stack */}
-        <div className="space-y-8">
-          {services.map((service, index) => (
-            <div key={service.title} className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-              {/* Service Header */}
-              <div className="p-6 pb-4">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-xl font-bold" style={{color: '#345114'}}>
-                    {service.title}
-                  </h3>
-                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                    <span className="text-green-600 font-bold text-sm">{index + 1}</span>
-                  </div>
-                </div>
-                <p className="text-gray-700 text-sm leading-relaxed">
-                  {service.description}
-                </p>
-              </div>
-
-              {/* Images Grid Mobile */}
-              <div className="px-6 pb-6">
-                <div className="grid grid-cols-3 gap-3">
-                  {service.images.map((image, imgIndex) => (
-                    <div key={imgIndex} className="aspect-square bg-gray-100 rounded-xl flex items-center justify-center">
-                      <div className="text-center text-gray-500">
-                        <div className="text-2xl mb-1">{image.placeholder}</div>
-                        <p className="text-xs leading-tight">{image.text}</p>
-                      </div>
+        {!loading && (
+          <div className="space-y-8">
+            {serviceCategories.map((category, index) => (
+              <div key={category.categoria} className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                {/* Service Header */}
+                <div className="p-6 pb-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-xl font-bold" style={{color: '#345114'}}>
+                      {category.categoria}
+                    </h3>
+                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                      <span className="text-green-600 font-bold text-sm">{index + 1}</span>
                     </div>
-                  ))}
+                  </div>
+                  <p className="text-gray-700 text-sm leading-relaxed">
+                    Conoce más sobre nuestros servicios de {category.categoria.toLowerCase()}.
+                  </p>
+                </div>
+
+                {/* Images Grid Mobile */}
+                <div className="px-6 pb-6">
+                  {renderServiceImages(category.servicios)}
                 </div>
               </div>
-
-
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* CTA Section */}
         <div className="mt-12 text-center">
