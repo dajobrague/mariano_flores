@@ -2,16 +2,35 @@
 import { useState, useEffect, useRef } from 'react'
 
 // YouTube API types
+interface YouTubePlayer {
+  playVideo: () => void;
+  pauseVideo: () => void;
+  destroy: () => void;
+}
+
+interface YouTubeEvent {
+  target: YouTubePlayer;
+}
+
 declare global {
   interface Window {
-    YT: any;
+    YT: {
+      Player: new (element: HTMLElement, config: {
+        height: string;
+        width: string;
+        videoId: string;
+        playerVars: Record<string, number>;
+        events: {
+          onReady: (event: YouTubeEvent) => void;
+        };
+      }) => YouTubePlayer;
+    };
     onYouTubeIframeAPIReady: () => void;
   }
 }
 
 export default function WhyChooseUs() {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false)
-  const [player, setPlayer] = useState<any>(null)
   const playerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -34,7 +53,7 @@ export default function WhyChooseUs() {
 
   const initializePlayer = () => {
     if (playerRef.current && window.YT) {
-      const newPlayer = new window.YT.Player(playerRef.current, {
+      new window.YT.Player(playerRef.current, {
         height: '400',
         width: '100%',
         videoId: '6VxikzfluYE',
@@ -50,12 +69,11 @@ export default function WhyChooseUs() {
           disablekb: 0
         },
         events: {
-          onReady: (event: any) => {
+          onReady: (event: YouTubeEvent) => {
             event.target.playVideo()
           }
         }
       })
-      setPlayer(newPlayer)
     }
   }
 
