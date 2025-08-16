@@ -1,6 +1,68 @@
 'use client'
+import { useState, useEffect, useRef } from 'react'
+
+// YouTube API types
+declare global {
+  interface Window {
+    YT: any;
+    onYouTubeIframeAPIReady: () => void;
+  }
+}
 
 export default function WhyChooseUs() {
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false)
+  const [player, setPlayer] = useState<any>(null)
+  const playerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    // Load YouTube API
+    if (!window.YT) {
+      const tag = document.createElement('script')
+      tag.src = 'https://www.youtube.com/iframe_api'
+      const firstScriptTag = document.getElementsByTagName('script')[0]
+      firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag)
+      
+      window.onYouTubeIframeAPIReady = () => {
+        if (isVideoPlaying && playerRef.current) {
+          initializePlayer()
+        }
+      }
+    } else if (isVideoPlaying && playerRef.current) {
+      initializePlayer()
+    }
+  }, [isVideoPlaying])
+
+  const initializePlayer = () => {
+    if (playerRef.current && window.YT) {
+      const newPlayer = new window.YT.Player(playerRef.current, {
+        height: '400',
+        width: '100%',
+        videoId: '6VxikzfluYE',
+        playerVars: {
+          autoplay: 1,
+          controls: 1,
+          modestbranding: 1,
+          rel: 0,
+          showinfo: 0,
+          iv_load_policy: 3,
+          cc_load_policy: 0,
+          fs: 1,
+          disablekb: 0
+        },
+        events: {
+          onReady: (event: any) => {
+            event.target.playVideo()
+          }
+        }
+      })
+      setPlayer(newPlayer)
+    }
+  }
+
+  const handlePlayVideo = () => {
+    setIsVideoPlaying(true)
+  }
+
   return (
     <>
       {/* Benefits Section */}
@@ -11,20 +73,22 @@ export default function WhyChooseUs() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-4">
                 {/* Top left image - teeth with dental tool */}
-                <div className="bg-gray-200 rounded-2xl h-64 flex items-center justify-center">
-                  <div className="text-center text-gray-500">
-                    <div className="text-4xl mb-2">🦷</div>
-                    <p className="text-sm">Imagen dental 1</p>
-                  </div>
+                <div className="rounded-2xl h-64 overflow-hidden shadow-lg">
+                  <img 
+                    src="/por-que-elegirnos-1.png" 
+                    alt="Imagen dental 1" 
+                    className="w-full h-64 object-cover"
+                  />
                 </div>
               </div>
               <div className="space-y-4 mt-8">
                 {/* Top right image - dental prosthetics */}
-                <div className="bg-gray-200 rounded-2xl h-64 flex items-center justify-center">
-                  <div className="text-center text-gray-500">
-                    <div className="text-4xl mb-2">🔬</div>
-                    <p className="text-sm">Imagen dental 2</p>
-                  </div>
+                <div className="rounded-2xl h-64 overflow-hidden shadow-lg">
+                  <img 
+                    src="/por-que-elegirnos-2.png" 
+                    alt="Imagen dental 2" 
+                    className="w-full h-64 object-cover"
+                  />
                 </div>
               </div>
             </div>
@@ -114,18 +178,30 @@ export default function WhyChooseUs() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div 
             className="rounded-3xl overflow-hidden shadow-2xl relative"
-            style={{
-              backgroundColor: '#4a7c59',
-              minHeight: '400px'
-            }}
+            style={{ height: '400px' }}
           >
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-center text-white">
-                <div className="text-6xl mb-4">▶️</div>
-                <h3 className="text-3xl font-light opacity-80">video</h3>
-                <p className="text-sm mt-4 opacity-60">Video placeholder - aquí irá el video del consultorio</p>
+            {!isVideoPlaying ? (
+              // Custom overlay
+              <div 
+                className="absolute inset-0 bg-gradient-to-br from-green-800 to-green-900 flex items-center justify-center cursor-pointer group"
+                onClick={handlePlayVideo}
+              >
+                <div className="text-center text-white">
+                  <div className="w-20 h-20 border-2 border-white rounded-full flex items-center justify-center mb-4 mx-auto group-hover:bg-white group-hover:bg-opacity-10 transition-all duration-300">
+                    <div className="w-0 h-0 border-l-[24px] border-l-white border-t-[14px] border-t-transparent border-b-[14px] border-b-transparent ml-2"></div>
+                  </div>
+                  <h3 className="text-2xl font-light mb-2">Conoce nuestro consultorio</h3>
+                  <p className="text-sm opacity-80">Haz clic para reproducir</p>
+                </div>
               </div>
-            </div>
+            ) : (
+              // Custom YouTube Player (no branding)
+              <div 
+                ref={playerRef}
+                className="w-full h-full"
+                style={{ height: '400px' }}
+              />
+            )}
           </div>
         </div>
       </section>

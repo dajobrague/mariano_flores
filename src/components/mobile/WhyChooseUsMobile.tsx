@@ -1,6 +1,68 @@
 'use client'
+import { useState, useEffect, useRef } from 'react'
+
+// YouTube API types
+declare global {
+  interface Window {
+    YT: any;
+    onYouTubeIframeAPIReady: () => void;
+  }
+}
 
 export default function WhyChooseUsMobile() {
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false)
+  const [player, setPlayer] = useState<any>(null)
+  const playerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    // Load YouTube API
+    if (!window.YT) {
+      const tag = document.createElement('script')
+      tag.src = 'https://www.youtube.com/iframe_api'
+      const firstScriptTag = document.getElementsByTagName('script')[0]
+      firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag)
+      
+      window.onYouTubeIframeAPIReady = () => {
+        if (isVideoPlaying && playerRef.current) {
+          initializePlayer()
+        }
+      }
+    } else if (isVideoPlaying && playerRef.current) {
+      initializePlayer()
+    }
+  }, [isVideoPlaying])
+
+  const initializePlayer = () => {
+    if (playerRef.current && window.YT) {
+      const newPlayer = new window.YT.Player(playerRef.current, {
+        height: '250',
+        width: '100%',
+        videoId: '6VxikzfluYE',
+        playerVars: {
+          autoplay: 1,
+          controls: 1,
+          modestbranding: 1,
+          rel: 0,
+          showinfo: 0,
+          iv_load_policy: 3,
+          cc_load_policy: 0,
+          fs: 1,
+          disablekb: 0
+        },
+        events: {
+          onReady: (event: any) => {
+            event.target.playVideo()
+          }
+        }
+      })
+      setPlayer(newPlayer)
+    }
+  }
+
+  const handlePlayVideo = () => {
+    setIsVideoPlaying(true)
+  }
+
   return (
     <>
       {/* Benefits Section - Mobile */}
@@ -17,19 +79,21 @@ export default function WhyChooseUsMobile() {
           {/* Images Grid - Mobile */}
           <div className="grid grid-cols-2 gap-3 mb-8">
             {/* Top left image */}
-            <div className="bg-gray-200 rounded-2xl h-32 flex items-center justify-center">
-              <div className="text-center text-gray-500">
-                <div className="text-2xl mb-1">🦷</div>
-                <p className="text-xs">Imagen dental 1</p>
-              </div>
+            <div className="rounded-2xl h-32 overflow-hidden shadow-md">
+              <img 
+                src="/por-que-elegirnos-1.png" 
+                alt="Imagen dental 1" 
+                className="w-full h-32 object-cover"
+              />
             </div>
             
             {/* Top right image */}
-            <div className="bg-gray-200 rounded-2xl h-32 flex items-center justify-center">
-              <div className="text-center text-gray-500">
-                <div className="text-2xl mb-1">🔬</div>
-                <p className="text-xs">Imagen dental 2</p>
-              </div>
+            <div className="rounded-2xl h-32 overflow-hidden shadow-md">
+              <img 
+                src="/por-que-elegirnos-2.png" 
+                alt="Imagen dental 2" 
+                className="w-full h-32 object-cover"
+              />
             </div>
           </div>
           
@@ -125,18 +189,30 @@ export default function WhyChooseUsMobile() {
         <div className="max-w-md mx-auto px-4 sm:px-6">
           <div 
             className="rounded-2xl overflow-hidden shadow-lg relative"
-            style={{
-              backgroundColor: '#4a7c59',
-              minHeight: '250px'
-            }}
+            style={{ height: '250px' }}
           >
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-center text-white">
-                <div className="text-4xl mb-3">▶️</div>
-                <h3 className="text-xl font-light opacity-80">video</h3>
-                <p className="text-xs mt-2 opacity-60 px-4">Video placeholder - aquí irá el video del consultorio</p>
+            {!isVideoPlaying ? (
+              // Custom overlay - Mobile
+              <div 
+                className="absolute inset-0 bg-gradient-to-br from-green-800 to-green-900 flex items-center justify-center cursor-pointer group"
+                onClick={handlePlayVideo}
+              >
+                <div className="text-center text-white">
+                  <div className="w-16 h-16 border-2 border-white rounded-full flex items-center justify-center mb-3 mx-auto group-hover:bg-white group-hover:bg-opacity-10 transition-all duration-300">
+                    <div className="w-0 h-0 border-l-[20px] border-l-white border-t-[12px] border-t-transparent border-b-[12px] border-b-transparent ml-1"></div>
+                  </div>
+                  <h3 className="text-lg font-light mb-1">Conoce nuestro consultorio</h3>
+                  <p className="text-xs opacity-80">Toca para reproducir</p>
+                </div>
               </div>
-            </div>
+            ) : (
+              // Custom YouTube Player (no branding) - Mobile
+              <div 
+                ref={playerRef}
+                className="w-full h-full"
+                style={{ height: '250px' }}
+              />
+            )}
           </div>
         </div>
       </section>
