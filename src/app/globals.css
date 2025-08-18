@@ -64,3 +64,48 @@ body {
 .hover-glow:hover {
   box-shadow: 0 0 20px rgba(183, 215, 120, 0.3);
 }
+
+/* Custom Video Player - Hide ALL YouTube UI Elements */
+.custom-video-player iframe {
+  pointer-events: none !important;
+}
+
+.custom-video-player .ytp-chrome-top,
+.custom-video-player .ytp-chrome-bottom,
+.custom-video-player .ytp-gradient-top,
+.custom-video-player .ytp-gradient-bottom,
+.custom-video-player .ytp-chrome-controls,
+.custom-video-player .ytp-control-bar,
+.custom-video-player .ytp-title,
+.custom-video-player .ytp-title-text,
+.custom-video-player .ytp-title-channel,
+.custom-video-player .ytp-watermark,
+.custom-video-player .ytp-contextmenu,
+.custom-video-player .ytp-paid-content-overlay,
+.custom-video-player .ytp-ce-element,
+.custom-video-player .ytp-cards-teaser,
+.custom-video-player .ytp-endscreen-element,
+.custom-video-player .ytp-impression-link,
+.custom-video-player .ytp-videowall-still,
+.custom-video-player .ytp-pause-overlay {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Additional YouTube UI hiding */
+.custom-video-player [class*="ytp-"],
+.custom-video-player [class*="youtube-"],
+.custom-video-player [id*="ytp-"],
+.custom-video-player [id*="youtube-"] {
+  pointer-events: none !important;
+}
+
+/* Block right-click context menu on video */
+.custom-video-player {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}

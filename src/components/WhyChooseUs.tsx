@@ -1,13 +1,70 @@
 'use client'
-import { useState } from 'react'
-import ReactPlayer from 'react-player'
+import { useState, useRef, useEffect, useCallback } from 'react'
 
 export default function WhyChooseUs() {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false)
+  const [isPaused, setIsPaused] = useState(false)
+  const videoRef = useRef<HTMLVideoElement>(null)
 
-  const handlePlayVideo = () => {
+  const handlePlayVideo = useCallback(() => {
     setIsVideoPlaying(true)
-  }
+    setIsPaused(false)
+    // Auto-play when video becomes visible
+    setTimeout(() => {
+      if (videoRef.current) {
+        videoRef.current.play().catch((error) => {
+          console.log('Error playing video:', error)
+        })
+      }
+    }, 100)
+  }, [])
+
+  const handleTogglePlayPause = useCallback(() => {
+    if (videoRef.current) {
+      if (isPaused) {
+        videoRef.current.play().catch((error) => {
+          console.log('Error playing video:', error)
+        })
+        setIsPaused(false)
+      } else {
+        videoRef.current.pause()
+        setIsPaused(true)
+      }
+    }
+  }, [isPaused])
+
+  const handleCloseVideo = useCallback(() => {
+    if (videoRef.current) {
+      videoRef.current.pause()
+      videoRef.current.currentTime = 0
+    }
+    setIsVideoPlaying(false)
+    setIsPaused(false)
+  }, [])
+
+  // Add event listeners to sync video state
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+
+    const handlePlay = () => setIsPaused(false)
+    const handlePause = () => setIsPaused(true)
+    const handleError = (error: Event) => {
+      console.log('Video error:', error)
+    }
+
+    video.addEventListener('play', handlePlay)
+    video.addEventListener('pause', handlePause)
+    video.addEventListener('error', handleError)
+
+    return () => {
+      if (video) {
+        video.removeEventListener('play', handlePlay)
+        video.removeEventListener('pause', handlePause)
+        video.removeEventListener('error', handleError)
+      }
+    }
+  }, [isVideoPlaying])
 
   return (
     <>
@@ -133,31 +190,77 @@ export default function WhyChooseUs() {
                 onClick={handlePlayVideo}
               >
                 <div className="text-center text-white">
+                  {/* Logo */}
+                  <div className="mb-6">
+                    <img 
+                      src="/white-logo.png" 
+                      alt="Dr. Mariano Flores Rubio" 
+                      className="h-20 w-auto mx-auto opacity-90 group-hover:opacity-100 transition-all duration-300"
+                    />
+                  </div>
+                  
+                  {/* Play Button */}
                   <div className="w-20 h-20 border-2 border-white rounded-full flex items-center justify-center mb-4 mx-auto group-hover:bg-white group-hover:bg-opacity-10 transition-all duration-300">
                     <div className="w-0 h-0 border-l-[24px] border-l-white border-t-[14px] border-t-transparent border-b-[14px] border-b-transparent ml-2"></div>
                   </div>
-                  <h3 className="text-2xl font-light mb-2">Conoce nuestro consultorio</h3>
-                  <p className="text-sm opacity-80">Haz clic para reproducir</p>
+                  
+                  {/* Text */}
+                  <p className="text-lg font-light">Haz clic para reproducir</p>
                 </div>
               </div>
             ) : (
-              // ReactPlayer - Custom video player without YouTube branding
-              <ReactPlayer
-                url="https://www.youtube.com/watch?v=6VxikzfluYE"
-                width="100%"
-                height="400px"
-                playing={true}
-                controls={true}
-                config={{
-                  youtube: {
-                    playerVars: {
-                      modestbranding: 1,
-                      rel: 0,
-                      showinfo: 0
-                    }
-                  }
-                }}
-              />
+              // Custom Video Player Container
+              <div className="custom-video-player w-full h-full relative bg-black rounded-3xl overflow-hidden">
+                {/* Native HTML5 Video */}
+                <video
+                  ref={videoRef}
+                  className="w-full h-full object-cover"
+                  preload="metadata"
+                  playsInline
+                  muted={false}
+                >
+                  <source src="/video-web-horizontal.mp4" type="video/mp4" />
+                  Tu navegador no soporta el elemento video.
+                </video>
+                
+                {/* Custom Controls Overlay */}
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+                  <div className="flex items-center justify-between text-white">
+                    <div className="flex items-center gap-3">
+                      <button 
+                        className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-all"
+                        onClick={handleTogglePlayPause}
+                        title={isPaused ? "Reproducir" : "Pausar"}
+                      >
+                        {isPaused ? (
+                          // Play icon
+                          <div className="w-0 h-0 border-l-[12px] border-l-white border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent ml-1"></div>
+                        ) : (
+                          // Pause icon
+                          <div className="flex gap-1">
+                            <div className="w-1 h-4 bg-white"></div>
+                            <div className="w-1 h-4 bg-white"></div>
+                          </div>
+                        )}
+                      </button>
+                      <span className="text-sm font-medium">Dr. Mariano Flores Rubio</span>
+                    </div>
+                    <div className="text-xs opacity-80">
+                      Nuestras instalaciones
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Video Controls */}
+                <div className="absolute top-4 right-4">
+                  <button 
+                    className="w-8 h-8 bg-black/50 rounded-full flex items-center justify-center hover:bg-black/70 transition-all"
+                    onClick={handleCloseVideo}
+                  >
+                    <div className="text-white text-sm">×</div>
+                  </button>
+                </div>
+              </div>
             )}
           </div>
         </div>
