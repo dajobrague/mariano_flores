@@ -1,81 +1,9 @@
 'use client'
-import { useState, useEffect, useRef } from 'react'
-
-// YouTube API types
-interface YouTubePlayer {
-  playVideo: () => void;
-  pauseVideo: () => void;
-  destroy: () => void;
-}
-
-interface YouTubeEvent {
-  target: YouTubePlayer;
-}
-
-declare global {
-  interface Window {
-    YT: {
-      Player: new (element: HTMLElement, config: {
-        height: string;
-        width: string;
-        videoId: string;
-        playerVars: Record<string, number>;
-        events: {
-          onReady: (event: YouTubeEvent) => void;
-        };
-      }) => YouTubePlayer;
-    };
-    onYouTubeIframeAPIReady: () => void;
-  }
-}
+import { useState } from 'react'
+import ReactPlayer from 'react-player'
 
 export default function WhyChooseUs() {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false)
-  const playerRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    // Load YouTube API
-    if (!window.YT) {
-      const tag = document.createElement('script')
-      tag.src = 'https://www.youtube.com/iframe_api'
-      const firstScriptTag = document.getElementsByTagName('script')[0]
-      firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag)
-      
-      window.onYouTubeIframeAPIReady = () => {
-        if (isVideoPlaying && playerRef.current) {
-          initializePlayer()
-        }
-      }
-    } else if (isVideoPlaying && playerRef.current) {
-      initializePlayer()
-    }
-  }, [isVideoPlaying])
-
-  const initializePlayer = () => {
-    if (playerRef.current && window.YT) {
-      new window.YT.Player(playerRef.current, {
-        height: '400',
-        width: '100%',
-        videoId: '6VxikzfluYE',
-        playerVars: {
-          autoplay: 1,
-          controls: 1,
-          modestbranding: 1,
-          rel: 0,
-          showinfo: 0,
-          iv_load_policy: 3,
-          cc_load_policy: 0,
-          fs: 1,
-          disablekb: 0
-        },
-        events: {
-          onReady: (event: YouTubeEvent) => {
-            event.target.playVideo()
-          }
-        }
-      })
-    }
-  }
 
   const handlePlayVideo = () => {
     setIsVideoPlaying(true)
@@ -213,11 +141,22 @@ export default function WhyChooseUs() {
                 </div>
               </div>
             ) : (
-              // Custom YouTube Player (no branding)
-              <div 
-                ref={playerRef}
-                className="w-full h-full"
-                style={{ height: '400px' }}
+              // ReactPlayer - Custom video player without YouTube branding
+              <ReactPlayer
+                url="https://www.youtube.com/watch?v=6VxikzfluYE"
+                width="100%"
+                height="400px"
+                playing={true}
+                controls={true}
+                config={{
+                  youtube: {
+                    playerVars: {
+                      modestbranding: 1,
+                      rel: 0,
+                      showinfo: 0
+                    }
+                  }
+                }}
               />
             )}
           </div>
