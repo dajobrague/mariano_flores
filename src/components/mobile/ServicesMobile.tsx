@@ -77,10 +77,10 @@ export default function ServicesMobile() {
                 <img 
                   src={getImageUrl(servicio)} 
                   alt={servicio.servicio}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transform transition-transform duration-300 hover:scale-110"
                 />
               ) : (
-                <div className="text-center text-gray-500">
+                <div className="text-center text-gray-500 transform transition-transform duration-300 hover:scale-110">
                   <div className="text-2xl">🦷</div>
                 </div>
               )}

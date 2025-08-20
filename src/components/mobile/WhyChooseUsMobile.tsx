@@ -106,14 +106,14 @@ export default function WhyChooseUsMobile() {
               <img 
                 src="/por-que-elegirnos-1.png" 
                 alt="Imagen dental 1" 
-                className="w-full h-32 object-cover"
+                className="w-full h-32 object-cover transform transition-transform duration-300 hover:scale-105"
               />
             </div>
             <div className="rounded-2xl h-32 overflow-hidden shadow-lg">
               <img 
                 src="/por-que-elegirnos-2.png" 
                 alt="Imagen dental 2" 
-                className="w-full h-32 object-cover"
+                className="w-full h-32 object-cover transform transition-transform duration-300 hover:scale-105"
               />
             </div>
           </div>

@@ -4,7 +4,14 @@ import Airtable from 'airtable';
 const AIRTABLE_PAT = process.env.NEXT_PUBLIC_AIRTABLE_PAT;
 const AIRTABLE_BASE_ID = process.env.NEXT_PUBLIC_AIRTABLE_BASE;
 
+console.log('Airtable Config Check:', {
+  AIRTABLE_PAT: AIRTABLE_PAT ? `${AIRTABLE_PAT.substring(0, 10)}...` : 'NOT SET',
+  AIRTABLE_BASE_ID: AIRTABLE_BASE_ID ? `${AIRTABLE_BASE_ID.substring(0, 10)}...` : 'NOT SET',
+  AIRTABLE_BASE_ID_FULL: AIRTABLE_BASE_ID // Para debug
+});
+
 if (!AIRTABLE_PAT || !AIRTABLE_BASE_ID) {
+  console.error('Missing Airtable environment variables:', { AIRTABLE_PAT: !!AIRTABLE_PAT, AIRTABLE_BASE_ID: !!AIRTABLE_BASE_ID });
   throw new Error('Las variables de entorno NEXT_PUBLIC_AIRTABLE_PAT y NEXT_PUBLIC_AIRTABLE_BASE son requeridas');
 }
 
@@ -37,6 +44,25 @@ export interface DentistaData {
   nombre: string;
   especialidad?: string;
   disponible?: boolean;
+}
+
+export interface BannerData {
+  id: string;
+  banner?: Array<{
+    id: string;
+    url: string;
+    filename: string;
+    size: number;
+    type: string;
+    width?: number;
+    height?: number;
+    thumbnails?: {
+      small?: { url: string; width: number; height: number };
+      large?: { url: string; width: number; height: number };
+      full?: { url: string; width: number; height: number };
+    };
+  }>;
+  orden: number;
 }
 
 export interface ServiceData {
@@ -412,4 +438,76 @@ export const getDentistas = async (): Promise<DentistaData[]> => {
 
 export const getDentistasDisponibles = async (): Promise<DentistaData[]> => {
   return await dentistasAirtableService.getDentistasDisponibles();
+};
+
+// Clase específica para banners del hero
+export class BannersAirtableService {
+  private tableName: string = 'tbln68f58VzW2g8Mt'; // ID de la tabla de banners
+
+  // Obtener todos los banners ordenados por orden
+  async getBanners(): Promise<BannerData[]> {
+    try {
+      console.log('BannersAirtableService - Iniciando getBanners()');
+      console.log('BannersAirtableService - Table name:', this.tableName);
+      
+      const records = await base(this.tableName).select({
+        view: 'Grid view',
+        sort: [{ field: 'Orden', direction: 'asc' }]
+      }).all();
+
+      console.log('BannersAirtableService - Records obtenidos:', records.length);
+      console.log('BannersAirtableService - Raw records:', records);
+
+      const banners = records.map(record => {
+        const fields = record.fields;
+        console.log('BannersAirtableService - Campos disponibles en banner:', Object.keys(fields));
+        console.log('BannersAirtableService - Fields completos:', fields);
+
+        // Resolver campo de attachment de forma flexible
+        let attachments = (fields['Banner'] || fields['banner'] || fields['Imagen'] || fields['Image']) as BannerData['banner'] | undefined;
+
+        if (!attachments) {
+          // Autodetectar: encontrar el primer campo que parezca un attachment array con objetos que tengan url
+          for (const [key, value] of Object.entries(fields)) {
+            if (Array.isArray(value) && value.length > 0) {
+              const first = value[0] as Record<string, unknown> | undefined;
+              const firstUrl = first && typeof first === 'object' ? (first as { url?: unknown }).url : undefined;
+              if (typeof firstUrl === 'string') {
+                console.log('BannersAirtableService - Attachment autodetectado en campo:', key);
+                attachments = value as BannerData['banner'];
+                break;
+              }
+            }
+          }
+        }
+
+        // Resolver orden de forma flexible
+        const ordenField = (fields['Orden'] ?? fields['order'] ?? fields['Order'] ?? fields['orden']) as number | undefined;
+
+        const bannerData = {
+          id: record.id,
+          banner: attachments,
+          orden: typeof ordenField === 'number' ? ordenField : 1
+        };
+
+        console.log('BannersAirtableService - Banner procesado:', bannerData);
+        return bannerData;
+      });
+
+      console.log('BannersAirtableService - Banners finales:', banners);
+      return banners;
+    } catch (error) {
+      console.error('BannersAirtableService - Error al obtener banners de Airtable:', error);
+      console.error('BannersAirtableService - Detalles del error:', JSON.stringify(error, null, 2));
+      throw new Error('No se pudieron obtener los banners de Airtable');
+    }
+  }
+}
+
+// Exportar instancia del servicio de banners
+export const bannersAirtableService = new BannersAirtableService();
+
+// Funciones helper para banners
+export const getBanners = async (): Promise<BannerData[]> => {
+  return await bannersAirtableService.getBanners();
 };

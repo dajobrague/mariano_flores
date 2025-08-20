@@ -80,7 +80,7 @@ export default function WhyChooseUs() {
                   <img 
                     src="/por-que-elegirnos-1.png" 
                     alt="Imagen dental 1" 
-                    className="w-full h-64 object-cover"
+                    className="w-full h-64 object-cover transform transition-transform duration-300 hover:scale-105"
                   />
                 </div>
               </div>
@@ -90,7 +90,7 @@ export default function WhyChooseUs() {
                   <img 
                     src="/por-que-elegirnos-2.png" 
                     alt="Imagen dental 2" 
-                    className="w-full h-64 object-cover"
+                    className="w-full h-64 object-cover transform transition-transform duration-300 hover:scale-105"
                   />
                 </div>
               </div>
