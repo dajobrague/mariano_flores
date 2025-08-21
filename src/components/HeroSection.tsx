@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { FaMicroscope, FaHeart, FaUserMd, FaTrophy } from 'react-icons/fa'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { getBanners, BannerData } from '../services/airtable'
 
 export default function HeroSection() {
@@ -15,9 +15,13 @@ export default function HeroSection() {
     }
   ], [])
 
-  const [banners, setBanners] = useState<BannerData[]>(getFallbackSlides())
+  const [banners, setBanners] = useState<BannerData[]>([])
   const [currentSlide, setCurrentSlide] = useState(0)
-  const [fadeOpacity, setFadeOpacity] = useState(1)
+  const [fadeOpacity, setFadeOpacity] = useState(0)
+  const [isLoading, setIsLoading] = useState(true)
+  const currentSlideRef = useRef(0)
+  const isTransitioningRef = useRef(false)
+  const FADE_DURATION_MS = 500
 
   // Obtener banners de Airtable
   useEffect(() => {
@@ -32,16 +36,24 @@ export default function HeroSection() {
         if (!bannersData || bannersData.length === 0) {
           console.log('HeroSection - No banners found, using only original slide')
           setBanners(getFallbackSlides())
+          setCurrentSlide(0)
+          setIsLoading(false)
           return
         }
         
-        // Combinar slide original con banners de Airtable
+        // Orden solicitado: primero el banner 0, luego el hero original, luego el resto de banners (2 en adelante)
+        const firstBanner = bannersData[0] ? [bannersData[0]] : []
+        const remainingBanners = bannersData.length > 1 ? bannersData.slice(1) : []
         const allSlides = [
+          ...firstBanner,
           ...getFallbackSlides(),
-          ...bannersData
+          ...remainingBanners
         ]
         console.log('HeroSection - All slides combined:', allSlides)
         setBanners(allSlides)
+        setCurrentSlide(0)
+        currentSlideRef.current = 0
+        setIsLoading(false)
       } catch (err) {
         console.error('HeroSection - Error al cargar banners:', err)
         console.error('HeroSection - Error details:', JSON.stringify(err, null, 2))
@@ -49,29 +61,58 @@ export default function HeroSection() {
         const fallbackSlides = getFallbackSlides()
         console.log('HeroSection - Using fallback slides:', fallbackSlides)
         setBanners(fallbackSlides)
+        setCurrentSlide(0)
+        currentSlideRef.current = 0
+        setIsLoading(false)
       }
     }
 
     fetchBanners()
   }, [getFallbackSlides])
 
-  // Auto-advance slideshow cada 5 segundos
+  // Sincronizar ref del slide actual
   useEffect(() => {
-    if (banners.length <= 1) return // No hacer slideshow si solo hay una imagen
-
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % banners.length)
-    }, 5000) // 5 segundos
-
-    return () => clearInterval(interval)
-  }, [banners.length])
-
-  // Fade-in en cambio de slide
-  useEffect(() => {
-    setFadeOpacity(0)
-    const id = setTimeout(() => setFadeOpacity(1), 0)
-    return () => clearTimeout(id)
+    currentSlideRef.current = currentSlide
   }, [currentSlide])
+
+  // Función para transicionar con fade
+  const goToSlide = useCallback((nextIndex: number) => {
+    if (isTransitioningRef.current || nextIndex === currentSlideRef.current) return
+    isTransitioningRef.current = true
+    setFadeOpacity(0)
+    const timeoutId = setTimeout(() => {
+      setCurrentSlide(nextIndex)
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setFadeOpacity(1)
+          isTransitioningRef.current = false
+        })
+      })
+    }, FADE_DURATION_MS)
+
+    return () => clearTimeout(timeoutId)
+  }, [])
+
+  // Auto-advance slideshow cada 5 segundos (solo cuando haya banners cargados)
+  useEffect(() => {
+    if (banners.length <= 1) return
+    const interval = setInterval(() => {
+      const next = (currentSlideRef.current + 1) % banners.length
+      goToSlide(next)
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [banners.length, goToSlide])
+
+  // Primer fade al terminar carga de banners
+  useEffect(() => {
+    if (!isLoading && banners.length > 0) {
+      setFadeOpacity(0)
+      const id = requestAnimationFrame(() => {
+        requestAnimationFrame(() => setFadeOpacity(1))
+      })
+      return () => cancelAnimationFrame(id)
+    }
+  }, [isLoading, banners.length])
 
   // Función para renderizar el slide actual
   const renderCurrentSlide = () => {
@@ -90,8 +131,8 @@ export default function HeroSection() {
     const currentBanner = banners[currentSlide]
     console.log('HeroSection - Current banner:', { currentBanner, currentSlide })
     
-    // Si es el primer slide (original) o no tiene banner, mostrar el hero completo original
-    if (currentSlide === 0 || !currentBanner?.banner || currentBanner.banner.length === 0) {
+    // Si el slide actual es el hero original o no tiene banner, mostrar el hero completo original
+    if (currentBanner?.id === 'original' || !currentBanner?.banner || currentBanner.banner.length === 0) {
       console.log('HeroSection - Showing original slide (first slide or no banner)')
       return renderOriginalSlide()
     }
@@ -173,11 +214,26 @@ export default function HeroSection() {
     </div>
   )
 
+  if (isLoading) {
+    // Reservar espacio sin mostrar el hero original para evitar el flash inicial
+    return (
+      <section
+        className="relative overflow-hidden flex items-center"
+        style={{
+          background: 'transparent',
+          minHeight: 'calc(85vh - 50px)'
+        }}
+      >
+        <div className="w-full h-full" />
+      </section>
+    )
+  }
+
   return (
     <section 
       className="relative overflow-hidden flex items-center" 
       style={{
-        background: currentSlide === 0 ? `linear-gradient(to bottom right, #b7d778, #a5d058)` : 'transparent',
+        background: banners[currentSlide]?.id === 'original' ? `linear-gradient(to bottom right, #b7d778, #a5d058)` : 'transparent',
         minHeight: 'calc(85vh - 50px)' // Much larger hero - almost full viewport
       }}
     >
@@ -193,7 +249,7 @@ export default function HeroSection() {
           <button
             type="button"
             aria-label="Anterior"
-            onClick={() => setCurrentSlide((prev) => (prev - 1 + banners.length) % banners.length)}
+            onClick={() => goToSlide((currentSlideRef.current - 1 + banners.length) % banners.length)}
             className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-black/30 hover:bg-black/50 text-white flex items-center justify-center transition"
           >
             <span className="sr-only">Anterior</span>
@@ -206,7 +262,7 @@ export default function HeroSection() {
           <button
             type="button"
             aria-label="Siguiente"
-            onClick={() => setCurrentSlide((prev) => (prev + 1) % banners.length)}
+            onClick={() => goToSlide((currentSlideRef.current + 1) % banners.length)}
             className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-black/30 hover:bg-black/50 text-white flex items-center justify-center transition"
           >
             <span className="sr-only">Siguiente</span>
@@ -220,7 +276,7 @@ export default function HeroSection() {
             {banners.map((_, index) => (
               <button
                 key={index}
-                onClick={() => setCurrentSlide(index)}
+                onClick={() => goToSlide(index)}
                 className={`w-3 h-3 rounded-full transition-all duration-300 ${
                   index === currentSlide 
                     ? 'bg-white scale-110' 
@@ -234,7 +290,7 @@ export default function HeroSection() {
       )}
 
       {/* Features Section - Solo mostrar en slide original */}
-      {currentSlide === 0 && (
+      {banners[currentSlide]?.id === 'original' && (
         <section className="bg-gray-100 border-t border-gray-200 absolute bottom-0 left-0 right-0">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 md:grid-cols-4 py-4" style={{position: 'relative'}}>

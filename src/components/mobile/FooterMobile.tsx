@@ -47,6 +47,21 @@ export default function FooterMobile() {
             </div>
           </div>
 
+          {/* Mapa (compacto) */}
+          <div className="flex justify-center mt-2">
+            <div className="w-full max-w-xs">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1472.8579622277573!2d-76.97468802249502!3d-12.091064416132038!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9105c7afafeb5b31%3A0x9b2cc449f37ca957!2sAv.%20Manuel%20Olgu%C3%ADn%20555%2C%20Lima%2015023%2C%20Per%C3%BA!5e0!3m2!1ses-419!2smx!4v1755788224064!5m2!1ses-419!2smx"
+                width="100%"
+                height="150"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            </div>
+          </div>
+
           {/* Horarios */}
           <div className="flex items-center justify-center space-x-3 p-3 bg-white/10 rounded-lg">
             <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
